@@ -1,9 +1,11 @@
 package ru.practicum;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import ru.practicum.dto.HitRequestDto;
 import ru.practicum.dto.StatResponseDto;
@@ -13,14 +15,17 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 
+@Component
 public class StatClient {
     private final RestClient restClient;
-    private final String serverUrl;
+
     private static final String HIT_URI = "/hit";
     private static final String STATS_URI = "/stats";
 
-    public StatClient(String serverUrl) {
-        this.serverUrl = serverUrl;
+    public StatClient(@Value("${stat-client.server-url}") String serverUrl) {
+        if (serverUrl == null || serverUrl.isBlank()) {
+            throw new IllegalArgumentException("URL сервиса статистики не задан");
+        }
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
         restClient = RestClient.builder()
                 .requestFactory(requestFactory)
