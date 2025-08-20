@@ -20,12 +20,10 @@ public class Request {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
     @ManyToOne
     @JoinColumn(name = "requester_id")
     private User requester;
 
-    @Column
     @ManyToOne
     @JoinColumn(name = "event_id")
     private Event event;

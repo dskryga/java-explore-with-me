@@ -8,12 +8,10 @@ import ru.practicum.model.request.Request;
 import java.util.List;
 
 public interface RequestRepository extends JpaRepository<Request, Long> {
-    Boolean existsByRequesterAndEvent(Long userId, Long eventId);
+    boolean existsByRequesterIdAndEventId(Long requesterId, Long eventId);
 
-    @Query("SELECT COUNT(r) FROM Request r WHERE r.eventId = :eventId")
     int countByEventId(Long eventId);
 
-    @Query("SELECT r FROM Request r WHERE r.eventId = :eventId")
     List<Request> findAllByEventId(Long eventId);
 
     @Query("SELECT r.event.id, COUNT(r) FROM Request r " +
@@ -21,6 +19,6 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
             "GROUP BY r.event.id")
     List<Object[]> countConfirmedRequestsByEventIds(@Param("eventIds") List<Long> eventIds);
 
-    @Query("SELECT COUNT(r) FROM Request r WHERE r.event.id = :eventId AND r.status = 'CONFIRMED'")
+    @Query("SELECT COUNT(r) FROM Request r WHERE r.event.id = :eventId AND r.status = :status")
     Integer countByEventIdAndStatus(@Param("eventId") Long eventId, @Param("status") String status);
 }

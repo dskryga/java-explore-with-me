@@ -29,7 +29,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public ParticipationRequestDto createRequest(Long userId, Long eventId) {
-        if (requestRepository.existsByRequesterAndEvent(userId, eventId)) {
+        if (requestRepository.existsByRequesterIdAndEventId(userId, eventId)) {
             throw new InvalidRequestException("Запрос на участие уже был создан раннее");
         }
         Event event = getEventOrThrow(eventId);

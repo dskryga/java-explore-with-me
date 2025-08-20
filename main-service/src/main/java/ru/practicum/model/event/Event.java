@@ -29,9 +29,11 @@ public class Event {
     @Column
     private String title;
 
+    @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @ManyToOne
     @JoinColumn(name = "initiator_id")
     private User initiator;
 

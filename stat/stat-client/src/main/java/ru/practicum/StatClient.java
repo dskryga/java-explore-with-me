@@ -10,6 +10,7 @@ import org.springframework.web.client.RestClient;
 import ru.practicum.dto.HitRequestDto;
 import ru.practicum.dto.StatResponseDto;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
@@ -27,6 +28,8 @@ public class StatClient {
             throw new IllegalArgumentException("URL сервиса статистики не задан");
         }
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(Duration.ofSeconds(3));
+        requestFactory.setConnectionRequestTimeout(Duration.ofSeconds(5));
         restClient = RestClient.builder()
                 .requestFactory(requestFactory)
                 .baseUrl(serverUrl)
