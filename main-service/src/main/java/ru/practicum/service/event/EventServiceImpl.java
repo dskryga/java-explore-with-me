@@ -504,14 +504,14 @@ public class EventServiceImpl implements EventService {
         try {
             String uri = "/events/" + eventId;
             LocalDateTime start = LocalDateTime.now().minusYears(1); // Берем статистику за последний год
-
+            LocalDateTime end = LocalDateTime.now().plusYears(1);
             Collection<StatResponseDto> stats = statsClient.getStat(
-                    start, LocalDateTime.now(), List.of(uri), true);
+                    start, end, List.of(uri), true);
 
             return stats.stream()
                     .findFirst()
                     .map(StatResponseDto::getHits)
-                    .orElse(1L);
+                    .orElse(0L);
         } catch (Exception e) {
             log.warn("Не удалось получить статистику просмотров для события {}: {}", eventId, e.getMessage());
             return 0L;
