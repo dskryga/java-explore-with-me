@@ -511,10 +511,10 @@ public class EventServiceImpl implements EventService {
             return stats.stream()
                     .findFirst()
                     .map(StatResponseDto::getHits)
-                    .orElse(0L);
+                    .orElse(1L);
         } catch (Exception e) {
             log.warn("Не удалось получить статистику просмотров для события {}: {}", eventId, e.getMessage());
-            return 0L;
+            return 1L;
         }
     }
 }
