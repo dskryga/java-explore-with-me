@@ -35,7 +35,7 @@ public class RequestServiceImpl implements RequestService {
         Event event = getEventOrThrow(eventId);
         User requester = getUserOrThrow(userId);
         RequestStatus status = RequestStatus.PENDING;
-        if (userId == event.getInitiator().getId()) {
+        if (event.getInitiator().getId().equals(userId)) {
             throw new InvalidRequestException("Инициатор события не может отправлять запрос на участие");
         }
         if (event.getState() != EventState.PUBLISHED) {
@@ -76,7 +76,7 @@ public class RequestServiceImpl implements RequestService {
 
         if (requestRepository.existsById(requestId)) {
             Request request = getRequestOrThrow(requestId);
-            if (request.getRequester().getId() != userId) {
+            if (request.getRequester().getId().equals(userId)) {
                 throw new InvalidRequestException(
                         String.format("Пользователь с id %d не является создателем запроса с id %d",
                                 userId, requestId));
