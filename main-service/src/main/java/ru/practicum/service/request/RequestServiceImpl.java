@@ -34,6 +34,7 @@ public class RequestServiceImpl implements RequestService {
         }
         Event event = getEventOrThrow(eventId);
         User requester = getUserOrThrow(userId);
+        RequestStatus status = RequestStatus.PENDING;
         if (userId == event.getInitiator().getId()) {
             throw new InvalidRequestException("Инициатор события не может отправлять запрос на участие");
         }
@@ -41,16 +42,20 @@ public class RequestServiceImpl implements RequestService {
             throw new InvalidRequestException("Нельзя подать запрос на участие в необуликованном событии");
         }
 
-        int participants = requestRepository.countByEventId(eventId);
-        if (participants >= event.getParticipantLimit()) {
+        int participants = requestRepository.countByEventIdAndStatus(eventId,RequestStatus.CONFIRMED);
+        if (participants >= event.getParticipantLimit() && event.getParticipantLimit() != 0) {
             throw new InvalidRequestException("В событии уже максимальное количество участников");
+        }
+
+        if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
+            status = RequestStatus.CONFIRMED;
         }
 
         Request request = Request.builder()
                 .requester(requester)
                 .event(event)
                 .created(LocalDateTime.now())
-                .status(RequestStatus.PENDING)
+                .status(status)
                 .build();
 
         return RequestMapper.mapToDto(requestRepository.save(request));
@@ -60,7 +65,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public List<ParticipationRequestDto> getUserRequests(Long userId) {
         getUserOrThrow(userId);
-        return requestRepository.findAllById(List.of(userId)).stream()
+        return requestRepository.findAllByRequesterId(userId).stream()
                 .map(RequestMapper::mapToDto)
                 .collect(Collectors.toList());
     }
@@ -76,7 +81,7 @@ public class RequestServiceImpl implements RequestService {
                         String.format("Пользователь с id %d не является создателем запроса с id %d",
                                 userId, requestId));
             }
-            request.setStatus(RequestStatus.CANCELLED);
+            request.setStatus(RequestStatus.CANCELED);
             return RequestMapper.mapToDto(requestRepository.save(request));
         } else {
             throw new NotFoundException(String.format("Запрос с id %d не существует", requestId));
@@ -87,7 +92,7 @@ public class RequestServiceImpl implements RequestService {
     public List<ParticipationRequestDto> getRequestsByEvent(Long userId, Long eventId) {
         getUserOrThrow(userId);
         Event event = getEventOrThrow(eventId);
-        if (event.getInitiator().getId() != userId) {
+        if (!event.getInitiator().getId().equals(userId)) {
             throw new InvalidRequestException(String.format
                     ("Только инициатор события может просматривать запросы на участие"));
         }
@@ -105,7 +110,7 @@ public class RequestServiceImpl implements RequestService {
         if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
             return updateResult;
         }
-        if (!isRequestsInPendingStatus(updateRequest.getRequestsId())) {
+        if (!isRequestsInPendingStatus(updateRequest.getRequestIds())) {
             throw new InvalidRequestException("Все запросы должны находиться в статусе PENDING");
         }
 
@@ -116,7 +121,7 @@ public class RequestServiceImpl implements RequestService {
         List<ParticipationRequestDto> confirmed = new ArrayList<>();
         List<ParticipationRequestDto> rejected = new ArrayList<>();
 
-        List<Request> requestsToUpdate = requestRepository.findAllById(updateRequest.getRequestsId());
+        List<Request> requestsToUpdate = requestRepository.findAllById(updateRequest.getRequestIds());
 
         int limit = event.getParticipantLimit();
         int requestsCount = event.getConfirmedRequests();
@@ -127,12 +132,12 @@ public class RequestServiceImpl implements RequestService {
                     request.setStatus(RequestStatus.CONFIRMED);
                     confirmed.add(RequestMapper.mapToDto(request));
                 } else {
-                    request.setStatus(RequestStatus.CANCELLED);
+                    request.setStatus(RequestStatus.REJECTED);
                     rejected.add(RequestMapper.mapToDto(request));
                 }
                 requestsCount++;
             } else {
-                request.setStatus(RequestStatus.CANCELLED);
+                request.setStatus(RequestStatus.REJECTED);
             }
         }
         event.setConfirmedRequests(requestsCount);

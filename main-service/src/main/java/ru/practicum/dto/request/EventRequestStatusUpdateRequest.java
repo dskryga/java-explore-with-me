@@ -1,5 +1,6 @@
 package ru.practicum.dto.request;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EventRequestStatusUpdateRequest {
-    List<Long> requestsId;
+    @NotEmpty
+    List<Long> requestIds;
     RequestUpdateStatus status;
 }

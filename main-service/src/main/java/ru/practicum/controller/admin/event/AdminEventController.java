@@ -1,5 +1,6 @@
 package ru.practicum.controller.admin.event;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,7 @@ import java.util.List;
 @RequestMapping("/admin/events")
 @RequiredArgsConstructor
 public class AdminEventController {
-    EventService eventService;
+    private final EventService eventService;
 
     @GetMapping
     List<EventFullDto> getEvents(@RequestParam(name = "users", required = false) List<Long> users,
@@ -28,8 +29,8 @@ public class AdminEventController {
         return eventService.getEventsForAdmin(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
-    @PatchMapping("/eventId")
-    EventFullDto updateEvent(@RequestBody UpdateEventAdminRequest updateEventAdminRequest,
+    @PatchMapping("/{eventId}")
+    EventFullDto updateEvent(@RequestBody @Valid UpdateEventAdminRequest updateEventAdminRequest,
                              @PathVariable Long eventId) {
         return eventService.updateEventByAdmin(updateEventAdminRequest, eventId);
     }

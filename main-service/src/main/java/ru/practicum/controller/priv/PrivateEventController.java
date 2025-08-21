@@ -2,6 +2,8 @@ package ru.practicum.controller.priv;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.event.EventShortDto;
@@ -18,11 +20,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/users/{userId}/events")
 @RequiredArgsConstructor
+@Slf4j
 public class PrivateEventController {
     private final EventService eventService;
     private final RequestService requestService;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public EventFullDto createEvent(@RequestBody @Valid NewEventDto newEventDto, @PathVariable Long userId) {
         return eventService.createEvent(newEventDto, userId);
     }
@@ -53,8 +57,10 @@ public class PrivateEventController {
 
     @PatchMapping("/{eventId}/requests")
     public EventRequestStatusUpdateResult changeRequestStatus(@PathVariable Long userId,
-                                                         @PathVariable Long eventId,
-                                                         @RequestBody EventRequestStatusUpdateRequest updateRequest) {
+                                                              @PathVariable Long eventId,
+                                                              @RequestBody @Valid EventRequestStatusUpdateRequest updateRequest) {
+        log.info("Получен запрос на изменение статуса запросов с id: {} на {}",
+                updateRequest.getRequestIds(), updateRequest.getStatus());
         return requestService.changeRequestStatus(userId, eventId, updateRequest);
     }
 }

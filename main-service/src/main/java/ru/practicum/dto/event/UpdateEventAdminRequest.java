@@ -26,14 +26,13 @@ public class UpdateEventAdminRequest {
 
     private Long category;
 
-    @Future(message = "The event date must be in future")
+    @Future
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
 
     private Location location;
 
     private Boolean paid;
-
 
     private Integer participantLimit;
     private Boolean requestModeration;

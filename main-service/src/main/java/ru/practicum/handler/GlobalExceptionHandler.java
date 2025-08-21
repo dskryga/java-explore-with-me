@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.exception.AccessDeniedException;
+import ru.practicum.exception.BadRequestException;
 import ru.practicum.exception.InvalidRequestException;
 import ru.practicum.exception.NotFoundException;
 
@@ -26,5 +27,11 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ApiError handleNotFoundException(final NotFoundException e){
         return ApiError.builder().description(e.getMessage()).errorCode(404).build();
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleBadRequestException(final BadRequestException e){
+        return ApiError.builder().description(e.getMessage()).errorCode(400).build();
     }
 }

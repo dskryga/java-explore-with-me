@@ -8,6 +8,7 @@ import ru.practicum.model.request.Request;
 public class RequestMapper {
    public ParticipationRequestDto mapToDto(Request request) {
         return ParticipationRequestDto.builder()
+                .id(request.getId())
                 .requester(request.getRequester().getId())
                 .event(request.getEvent().getId())
                 .created(request.getCreated())

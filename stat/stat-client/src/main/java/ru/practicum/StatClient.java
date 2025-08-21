@@ -28,21 +28,36 @@ public class StatClient {
             throw new IllegalArgumentException("URL сервиса статистики не задан");
         }
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(Duration.ofSeconds(3));
-        requestFactory.setConnectionRequestTimeout(Duration.ofSeconds(5));
+        requestFactory.setConnectTimeout(Duration.ofSeconds(10));
+        requestFactory.setConnectionRequestTimeout(Duration.ofSeconds(15));
         restClient = RestClient.builder()
                 .requestFactory(requestFactory)
                 .baseUrl(serverUrl)
                 .build();
     }
 
-    public void addHit(HitRequestDto hitRequestDto) {
+    /*public void addHit(HitRequestDto hitRequestDto) {
         hitRequestDto.setTimestamp(LocalDateTime.now());
         restClient.post()
                 .uri(HIT_URI)
                 .body(hitRequestDto)
                 .contentType(MediaType.APPLICATION_JSON)
                 .retrieve();
+    }*/
+
+    public void addHit(HitRequestDto hitRequestDto) {
+        hitRequestDto.setTimestamp(LocalDateTime.now());
+        try {
+            restClient.post()
+                    .uri(HIT_URI)
+                    .body(hitRequestDto)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    .toBodilessEntity(); // Добавьте это для синхронного выполнения
+        } catch (Exception e) {
+            // Логируйте ошибку, но не прерывайте основной поток
+            System.err.println("Ошибка при сохранении статистики: " + e.getMessage());
+        }
     }
 
     public Collection<StatResponseDto> getStat(LocalDateTime start,

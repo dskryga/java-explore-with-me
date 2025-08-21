@@ -14,6 +14,7 @@ import ru.practicum.dto.HitRequestDto;
 import ru.practicum.dto.StatResponseDto;
 import ru.practicum.dto.event.*;
 import ru.practicum.exception.AccessDeniedException;
+import ru.practicum.exception.BadRequestException;
 import ru.practicum.exception.InvalidRequestException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.mapper.EventMapper;
@@ -22,6 +23,7 @@ import ru.practicum.model.User;
 import ru.practicum.model.event.Event;
 import ru.practicum.model.event.EventState;
 import ru.practicum.model.event.Location;
+import ru.practicum.model.request.RequestStatus;
 import ru.practicum.repository.CategoryRepository;
 import ru.practicum.repository.EventRepository;
 import ru.practicum.repository.RequestRepository;
@@ -43,9 +45,9 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventFullDto createEvent(NewEventDto newEventDto, Long userId) {
-        //сделать валидацию времени
         Category category = getCategoryOrThrow(newEventDto.getCategory());
         User initiator = getUserOrThrow(userId);
+        validateEventDate(newEventDto.getEventDate());
         Event createdEvent = EventMapper.mapToEvent(newEventDto);
         createdEvent.setCategory(category);
         createdEvent.setInitiator(initiator);
@@ -67,7 +69,7 @@ public class EventServiceImpl implements EventService {
 
         getUserOrThrow(userId);
 
-        if (event.getId() != userId) {
+        if (!event.getInitiator().getId().equals(userId)) {
             throw new AccessDeniedException(String.format("Пользователь с id %d не является создателем события с id %d",
                     userId, eventId));
         }
@@ -79,7 +81,7 @@ public class EventServiceImpl implements EventService {
         Event event = getEventOrThrow(eventId);
         getUserOrThrow(userId);
 
-        if (userId != event.getInitiator().getId()) {
+        if (!event.getInitiator().getId().equals(userId)) {
             throw new AccessDeniedException(String.format("Пользователь с id %d не является создателем события с id %d",
                     userId, eventId));
         }
@@ -132,7 +134,7 @@ public class EventServiceImpl implements EventService {
             if (updateEventUserRequest.getStateAction() == UpdateEventUserRequest.StateAction.SEND_TO_REVIEW) {
                 event.setState(EventState.PENDING);
             } else {
-                event.setState(EventState.CANCELLED);
+                event.setState(EventState.CANCELED);
             }
         }
 
@@ -173,6 +175,10 @@ public class EventServiceImpl implements EventService {
             int from,
             int size,
             HttpServletRequest request) {
+
+        if(rangeStart!=null && rangeEnd!=null && rangeStart.isAfter(rangeEnd)) {
+            throw new BadRequestException("Время начала не может быть позже времени конца при фильтрации");
+        }
 
         // 1. Сохраняем информацию о запросе в статистику
         saveHitStats(request);
@@ -317,10 +323,14 @@ public class EventServiceImpl implements EventService {
             event.setRequestModeration(newEvent.getRequestModeration());
         }
 
-        switch (newEvent.getStateAction()) {
-            case REJECT_EVENT -> rejectEvent(event);
-            case PUBLISH_EVENT -> publishEvent(event);
+        if(newEvent.getStateAction()!=null) {
+            switch (newEvent.getStateAction()) {
+                case REJECT_EVENT -> rejectEvent(event);
+                case PUBLISH_EVENT -> publishEvent(event);
+            }
         }
+
+
 
         Event updated = eventRepository.save(event);
         return EventMapper.mapToFullDto(updated);
@@ -330,7 +340,7 @@ public class EventServiceImpl implements EventService {
         if (event.getState() == EventState.PUBLISHED) {
             throw new InvalidRequestException("Опубликованное событие не может быть отклонено");
         }
-        event.setState(EventState.CANCELLED);
+        event.setState(EventState.CANCELED);
     }
 
     private void publishEvent(Event event) {
@@ -458,7 +468,7 @@ public class EventServiceImpl implements EventService {
                     .orElse(LocalDateTime.now().minusYears(1));
 
             Collection<StatResponseDto> stats = statsClient.getStat(
-                    start, LocalDateTime.now(), uris, false);
+                    start, LocalDateTime.now(), uris, true);
 
             return stats.stream()
                     .collect(Collectors.toMap(
@@ -486,7 +496,7 @@ public class EventServiceImpl implements EventService {
 
     private Integer getConfirmedRequestsForEvent(Long eventId) {
         try {
-            return requestRepository.countByEventIdAndStatus(eventId, "CONFIRMED");
+            return requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
         } catch (Exception e) {
             log.warn("Не удалось получить количество подтвержденных запросов для события {}: {}", eventId, e.getMessage());
             return 0;
@@ -499,7 +509,7 @@ public class EventServiceImpl implements EventService {
             LocalDateTime start = LocalDateTime.now().minusYears(1); // Берем статистику за последний год
 
             Collection<StatResponseDto> stats = statsClient.getStat(
-                    start, LocalDateTime.now(), List.of(uri), false);
+                    start, LocalDateTime.now(), List.of(uri), true);
 
             return stats.stream()
                     .findFirst()

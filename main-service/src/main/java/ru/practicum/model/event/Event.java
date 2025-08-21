@@ -53,19 +53,24 @@ public class Event {
     private Double locationLon;
 
     @Column
+    @Builder.Default
     private Boolean paid = false;
 
     @Column(name = "participant_limit")
+    @Builder.Default
     private Integer participantLimit = 0;
 
     @Column(name = "request_moderation")
+    @Builder.Default
     private Boolean requestModeration = true;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column
+    @Builder.Default
     private EventState state = EventState.PENDING;
 
     @Column(name = "confirmed_requests")
+    @Builder.Default
     private Integer confirmedRequests = 0;
 
     @Transient

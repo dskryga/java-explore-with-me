@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.dto.user.NewUserRequest;
 import ru.practicum.dto.user.UserDto;
+import ru.practicum.exception.InvalidRequestException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.mapper.UserMapper;
 import ru.practicum.model.User;
@@ -21,6 +22,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(NewUserRequest newUserRequest) {
+        if (userRepository.existsByEmail(newUserRequest.getEmail())) {
+            throw new InvalidRequestException("Пользователь с таким email уже существует");
+        }
         User created = userRepository.save(UserMapper.mapToUser(newUserRequest));
         return UserMapper.mapToDto(created);
     }
@@ -28,7 +32,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> getUsers(List<Long> ids, Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from / size, size);
-        if (ids.isEmpty() || ids == null) {
+        if (ids == null || ids.isEmpty()) {
             return userRepository.findAll(pageable)
                     .stream()
                     .map(UserMapper::mapToDto)
