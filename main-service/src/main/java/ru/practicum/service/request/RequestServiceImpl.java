@@ -93,8 +93,8 @@ public class RequestServiceImpl implements RequestService {
         getUserOrThrow(userId);
         Event event = getEventOrThrow(eventId);
         if (!event.getInitiator().getId().equals(userId)) {
-            throw new InvalidRequestException(String.format
-                    ("Только инициатор события может просматривать запросы на участие"));
+            throw new InvalidRequestException(String
+                    .format("Только инициатор события может просматривать запросы на участие"));
         }
         return requestRepository.findAllByEventId(eventId).stream()
                 .map(RequestMapper::mapToDto)
