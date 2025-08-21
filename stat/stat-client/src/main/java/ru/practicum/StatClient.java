@@ -36,14 +36,6 @@ public class StatClient {
                 .build();
     }
 
-    /*public void addHit(HitRequestDto hitRequestDto) {
-        hitRequestDto.setTimestamp(LocalDateTime.now());
-        restClient.post()
-                .uri(HIT_URI)
-                .body(hitRequestDto)
-                .contentType(MediaType.APPLICATION_JSON)
-                .retrieve();
-    }*/
 
     public void addHit(HitRequestDto hitRequestDto) {
         hitRequestDto.setTimestamp(LocalDateTime.now());
@@ -53,9 +45,8 @@ public class StatClient {
                     .body(hitRequestDto)
                     .contentType(MediaType.APPLICATION_JSON)
                     .retrieve()
-                    .toBodilessEntity(); // Добавьте это для синхронного выполнения
+                    .toBodilessEntity(); // синхронное выполнение
         } catch (Exception e) {
-            // Логируйте ошибку, но не прерывайте основной поток
             System.err.println("Ошибка при сохранении статистики: " + e.getMessage());
         }
     }

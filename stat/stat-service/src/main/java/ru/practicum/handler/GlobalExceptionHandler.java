@@ -10,7 +10,7 @@ import ru.practicum.exception.InvalidRequestException;
 public class GlobalExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError handleInvalidRequestException(final InvalidRequestException e){
+    public ApiError handleInvalidRequestException(final InvalidRequestException e) {
         return ApiError.builder().description(e.getMessage()).errorCode(400).build();
     }
 }

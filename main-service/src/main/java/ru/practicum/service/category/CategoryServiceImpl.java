@@ -41,7 +41,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto updateCategory(NewCategoryDto newCategoryDto, Long catId) {
         Category category = getCategoryOrThrow(catId);
-        if(category.getName().equals(newCategoryDto.getName())) {
+        if (category.getName().equals(newCategoryDto.getName())) {
             return CategoryMapper.mapToDto(category);
         }
         validateAvailableName(newCategoryDto.getName());

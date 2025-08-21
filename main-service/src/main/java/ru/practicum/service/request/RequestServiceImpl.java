@@ -42,7 +42,7 @@ public class RequestServiceImpl implements RequestService {
             throw new InvalidRequestException("Нельзя подать запрос на участие в необуликованном событии");
         }
 
-        int participants = requestRepository.countByEventIdAndStatus(eventId,RequestStatus.CONFIRMED);
+        int participants = requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
         if (participants >= event.getParticipantLimit() && event.getParticipantLimit() != 0) {
             throw new InvalidRequestException("В событии уже максимальное количество участников");
         }

@@ -25,13 +25,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ApiError handleNotFoundException(final NotFoundException e){
+    public ApiError handleNotFoundException(final NotFoundException e) {
         return ApiError.builder().description(e.getMessage()).errorCode(404).build();
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError handleBadRequestException(final BadRequestException e){
+    public ApiError handleBadRequestException(final BadRequestException e) {
         return ApiError.builder().description(e.getMessage()).errorCode(400).build();
     }
 }

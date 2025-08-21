@@ -30,7 +30,7 @@ public class HitServiceImpl implements HitService {
                                          LocalDateTime end,
                                          ArrayList<String> uris,
                                          Boolean unique) {
-        if(start!=null && end!=null && start.isAfter(end)) {
+        if (start != null && end != null && start.isAfter(end)) {
             throw new InvalidRequestException("Несоответсвие даты в фильтре");
         }
 

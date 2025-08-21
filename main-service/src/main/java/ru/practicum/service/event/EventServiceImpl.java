@@ -176,21 +176,21 @@ public class EventServiceImpl implements EventService {
             int size,
             HttpServletRequest request) {
 
-        if(rangeStart!=null && rangeEnd!=null && rangeStart.isAfter(rangeEnd)) {
+        if (rangeStart != null && rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
             throw new BadRequestException("Время начала не может быть позже времени конца при фильтрации");
         }
 
-        // 1. Сохраняем информацию о запросе в статистику
+        // Сохраняем информацию о запросе в статистику
         saveHitStats(request);
 
-        // 2. Устанавливаем диапазон дат по умолчанию
+        // Устанавливаем диапазон дат по умолчанию
         LocalDateTime start = rangeStart != null ? rangeStart : LocalDateTime.now();
         LocalDateTime end = rangeEnd;
 
-        // 3. Строим спецификацию для фильтрации
+        // Строим спецификацию для фильтрации
         Specification<Event> spec = buildEventSpecification(text, categories, paid, start, end, onlyAvailable);
 
-        // 4. Получаем события с пагинацией
+        //  Получаем события с пагинацией
         Pageable pageable = PageRequest.of(from / size, size);
         Page<Event> eventsPage = eventRepository.findAll(spec, pageable);
         List<Event> events = eventsPage.getContent();
@@ -199,26 +199,25 @@ public class EventServiceImpl implements EventService {
             return Collections.emptyList();
         }
 
-        // 5. Получаем просмотры из статистики
+        // Получаем просмотры из статистики
         Map<Long, Long> viewsMap = getViewsForEvents(events);
 
-        // 6. Получаем подтвержденные заявки
+        // Получаем подтвержденные заявки
         Map<Long, Integer> confirmedRequestsMap = getConfirmedRequestsForEvents(
                 events.stream().map(Event::getId).collect(Collectors.toList())
         );
 
-        // 7. Обновляем события с актуальными данными
+        // Обновляем события с актуальными данными
         events.forEach(event -> {
             event.setViews(viewsMap.getOrDefault(event.getId(), 0L));
             event.setConfirmedRequests(confirmedRequestsMap.getOrDefault(event.getId(), 0));
         });
 
-        // 8. Преобразуем в DTO
         List<EventShortDto> result = events.stream()
                 .map(EventMapper::mapToShortDto)
                 .collect(Collectors.toList());
 
-        // 9. Сортировка
+        // Сортировка
         if ("EVENT_DATE".equals(sort)) {
             result.sort(Comparator.comparing(EventShortDto::getEventDate));
         } else if ("VIEWS".equals(sort)) {
@@ -230,22 +229,22 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventFullDto getEvent(Long id, HttpServletRequest request) {
-        // 1. Сохраняем информацию о запросе в статистику
+        // Сохраняем информацию о запросе в статистику
         saveHitStats(request);
 
-        // 2. Находим событие (только опубликованное)
+        // Находим событие (только опубликованное)
         Event event = eventRepository.findByIdAndState(id, EventState.PUBLISHED)
                 .orElseThrow(() -> new NotFoundException("Событие с id=" + id + " не найдено или не опубликовано"));
 
-        // 3. Получаем количество просмотров
+        // Получаем количество просмотров
         Long views = getViewsForEvent(id);
         event.setViews(views);
 
-        // 4. Получаем количество подтвержденных запросов
+        // Получаем количество подтвержденных запросов
         Integer confirmedRequests = getConfirmedRequestsForEvent(id);
         event.setConfirmedRequests(confirmedRequests);
 
-        // 5. Преобразуем в DTO
+        // Преобразуем в DTO
         return EventMapper.mapToFullDto(event);
     }
 
@@ -259,10 +258,10 @@ public class EventServiceImpl implements EventService {
             Integer from,
             Integer size) {
 
-        // 1. Строим спецификацию или используем Query
+        // Строим спецификацию
         Specification<Event> spec = buildAdminSpecification(users, states, categories, rangeStart, rangeEnd);
 
-        // 2. Получаем события с пагинацией
+        // Получаем события с пагинацией
         Pageable pageable = PageRequest.of(from / size, size);
         Page<Event> eventsPage = eventRepository.findAll(spec, pageable);
         List<Event> events = eventsPage.getContent();
@@ -271,10 +270,10 @@ public class EventServiceImpl implements EventService {
             return Collections.emptyList();
         }
 
-        // 3. Получаем просмотры из статистики
+        // просмотры из статистики
         Map<Long, Long> viewsMap = getViewsForEvents(events);
 
-        // 4. Получаем подтвержденные заявки
+        // подтвержденные заявки
         Map<Long, Integer> confirmedRequestsMap = getConfirmedRequestsForEvents(
                 events.stream().map(Event::getId).collect(Collectors.toList())
         );
@@ -285,7 +284,6 @@ public class EventServiceImpl implements EventService {
             event.setConfirmedRequests(confirmedRequestsMap.getOrDefault(event.getId(), 0));
         });
 
-        // 6. Преобразуем в DTO
         return events.stream()
                 .map(EventMapper::mapToFullDto)
                 .collect(Collectors.toList());
@@ -323,13 +321,12 @@ public class EventServiceImpl implements EventService {
             event.setRequestModeration(newEvent.getRequestModeration());
         }
 
-        if(newEvent.getStateAction()!=null) {
+        if (newEvent.getStateAction() != null) {
             switch (newEvent.getStateAction()) {
                 case REJECT_EVENT -> rejectEvent(event);
                 case PUBLISH_EVENT -> publishEvent(event);
             }
         }
-
 
 
         Event updated = eventRepository.save(event);
@@ -428,7 +425,7 @@ public class EventServiceImpl implements EventService {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("eventDate"), rangeEnd));
             }
 
-            // Фильтр по доступности (только события с free slots)
+            // Фильтр по доступности
             if (Boolean.TRUE.equals(onlyAvailable)) {
                 predicates.add(criteriaBuilder.or(
                         criteriaBuilder.equal(root.get("participantLimit"), 0),

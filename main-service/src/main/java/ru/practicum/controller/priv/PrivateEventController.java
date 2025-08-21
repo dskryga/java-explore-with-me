@@ -28,6 +28,7 @@ public class PrivateEventController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public EventFullDto createEvent(@RequestBody @Valid NewEventDto newEventDto, @PathVariable Long userId) {
+        log.info("Получен запрос от пользователя с id {} на создание события {}", userId, newEventDto);
         return eventService.createEvent(newEventDto, userId);
     }
 
@@ -35,11 +36,13 @@ public class PrivateEventController {
     public List<EventShortDto> getEventsByCurrentUser(@PathVariable Long userId,
                                                       @RequestParam(name = "from", defaultValue = "0", required = false) Integer from,
                                                       @RequestParam(name = "size", defaultValue = "10", required = false) Integer size) {
+        log.info("Получен запрос от пользователя с id {} на  получение собственных событий", userId);
         return eventService.getEventsByCurrentUser(userId, from, size);
     }
 
     @GetMapping("/{eventId}")
     public EventFullDto getEventById(@PathVariable Long userId, @PathVariable Long eventId) {
+        log.info("Получен запрос от пользователя с id {} на  получение события с id {}", userId, eventId);
         return eventService.getEventById(userId, eventId);
     }
 

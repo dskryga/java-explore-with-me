@@ -9,7 +9,7 @@ import ru.practicum.model.event.Location;
 
 @UtilityClass
 public class EventMapper {
-    public Event mapToEvent (NewEventDto newEventDto) {
+    public Event mapToEvent(NewEventDto newEventDto) {
         return Event.builder()
                 .annotation(newEventDto.getAnnotation())
                 .description(newEventDto.getDescription())
@@ -44,7 +44,7 @@ public class EventMapper {
                 .build();
     }
 
-    public EventShortDto mapToShortDto(Event event){
+    public EventShortDto mapToShortDto(Event event) {
         return EventShortDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())

@@ -10,5 +10,6 @@ import java.util.List;
 @Repository
 public interface CompilationRepository extends JpaRepository<Compilation, Long> {
     boolean existsByTitle(String title);
+
     List<Compilation> findByPinned(Boolean pinned, Pageable pageable);
 }

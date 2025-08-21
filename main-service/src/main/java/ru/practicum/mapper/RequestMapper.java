@@ -6,7 +6,7 @@ import ru.practicum.model.request.Request;
 
 @UtilityClass
 public class RequestMapper {
-   public ParticipationRequestDto mapToDto(Request request) {
+    public ParticipationRequestDto mapToDto(Request request) {
         return ParticipationRequestDto.builder()
                 .id(request.getId())
                 .requester(request.getRequester().getId())

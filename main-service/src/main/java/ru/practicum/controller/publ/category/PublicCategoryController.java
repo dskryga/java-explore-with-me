@@ -17,14 +17,14 @@ public class PublicCategoryController {
 
     @GetMapping("/{catId}")
     public CategoryDto getCategoryById(@PathVariable Long catId) {
-        log.info("Получен запрос на получение категории по id: {}", catId);
+        log.info("UNAUTHORIZED: Получен запрос на получение категории по id: {}", catId);
         return categoryService.getCategoryById(catId);
     }
 
     @GetMapping
     public List<CategoryDto> getCategories(@RequestParam(defaultValue = "0") Integer from,
                                            @RequestParam(defaultValue = "10") Integer size) {
-        log.info("Получен запрос на получение всех категорий");
+        log.info("UNAUTHORIZED: Получен запрос на получение всех категорий");
         return categoryService.getCategories(from, size);
     }
 }
