@@ -465,7 +465,7 @@ public class EventServiceImpl implements EventService {
                     .orElse(LocalDateTime.now().minusYears(1));
 
             Collection<StatResponseDto> stats = statsClient.getStat(
-                    start, LocalDateTime.now(), uris, false);
+                    start, LocalDateTime.now(), uris, true);
 
             return stats.stream()
                     .collect(Collectors.toMap(
