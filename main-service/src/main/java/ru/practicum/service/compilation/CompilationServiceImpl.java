@@ -50,7 +50,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public CompilationDto updateCompilationByAdmin(Long compId, UpdateCompilationRequest updateCompilationRequest) {
         Compilation compilation = getCompilationOrThrow(compId);
-        if (updateCompilationRequest.getTitle() != null) {
+        if (updateCompilationRequest.getTitle() != null && !updateCompilationRequest.getTitle().isBlank()) {
             compilation.setTitle(updateCompilationRequest.getTitle());
         }
         if (updateCompilationRequest.getPinned() != null) {

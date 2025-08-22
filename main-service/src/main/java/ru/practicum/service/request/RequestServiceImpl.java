@@ -39,7 +39,7 @@ public class RequestServiceImpl implements RequestService {
             throw new InvalidRequestException("Инициатор события не может отправлять запрос на участие");
         }
         if (event.getState() != EventState.PUBLISHED) {
-            throw new InvalidRequestException("Нельзя подать запрос на участие в необуликованном событии");
+            throw new InvalidRequestException("Нельзя подать запрос на участие в неопубликованном событии");
         }
 
         int participants = requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
@@ -93,8 +93,7 @@ public class RequestServiceImpl implements RequestService {
         getUserOrThrow(userId);
         Event event = getEventOrThrow(eventId);
         if (!event.getInitiator().getId().equals(userId)) {
-            throw new InvalidRequestException(String
-                    .format("Только инициатор события может просматривать запросы на участие"));
+            throw new InvalidRequestException("Только инициатор события может просматривать запросы на участие");
         }
         return requestRepository.findAllByEventId(eventId).stream()
                 .map(RequestMapper::mapToDto)

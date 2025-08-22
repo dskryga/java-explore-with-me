@@ -90,7 +90,7 @@ public class EventServiceImpl implements EventService {
             throw new InvalidRequestException("Событие в статусе Опубликовано изменить нельзя");
         }
 
-        if (updateEventUserRequest.getAnnotation() != null) {
+        if (updateEventUserRequest.getAnnotation() != null && !updateEventUserRequest.getAnnotation().isBlank()) {
             event.setAnnotation(updateEventUserRequest.getAnnotation());
         }
 
@@ -99,7 +99,7 @@ public class EventServiceImpl implements EventService {
             event.setCategory(category);
         }
 
-        if (updateEventUserRequest.getDescription() != null) {
+        if (updateEventUserRequest.getDescription() != null && !updateEventUserRequest.getDescription().isBlank()) {
             event.setDescription(updateEventUserRequest.getDescription());
         }
 
@@ -126,7 +126,7 @@ public class EventServiceImpl implements EventService {
             event.setRequestModeration(updateEventUserRequest.getRequestModeration());
         }
 
-        if (updateEventUserRequest.getTitle() != null) {
+        if (updateEventUserRequest.getTitle() != null && !updateEventUserRequest.getTitle().isBlank()) {
             event.setTitle(updateEventUserRequest.getTitle());
         }
 
@@ -298,13 +298,13 @@ public class EventServiceImpl implements EventService {
             event.setEventDate(newEvent.getEventDate());
         }
 
-        if (newEvent.getTitle() != null) {
+        if (newEvent.getTitle() != null && !newEvent.getTitle().isBlank()) {
             event.setTitle(newEvent.getTitle());
         }
         if (newEvent.getAnnotation() != null) {
             event.setAnnotation(newEvent.getAnnotation());
         }
-        if (newEvent.getDescription() != null) {
+        if (newEvent.getDescription() != null && !newEvent.getDescription().isBlank()) {
             event.setDescription(newEvent.getDescription());
         }
         if (newEvent.getPaid() != null) {
