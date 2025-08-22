@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.dto.HitRequestDto;
 import ru.practicum.dto.StatResponseDto;
+import ru.practicum.exception.InvalidRequestException;
 import ru.practicum.mapper.HitMapper;
 import ru.practicum.mapper.StatMapper;
 import ru.practicum.repository.HitRepository;
@@ -29,6 +30,10 @@ public class HitServiceImpl implements HitService {
                                          LocalDateTime end,
                                          ArrayList<String> uris,
                                          Boolean unique) {
+        if (start != null && end != null && start.isAfter(end)) {
+            throw new InvalidRequestException("Несоответсвие даты в фильтре");
+        }
+
         if (unique) {
             if (uris == null || uris.isEmpty()) {
                 return hitRepository.findUniqueStatsByDate(start, end).stream()

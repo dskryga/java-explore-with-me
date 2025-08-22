@@ -10,6 +10,7 @@ import org.springframework.web.client.RestClient;
 import ru.practicum.dto.HitRequestDto;
 import ru.practicum.dto.StatResponseDto;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
@@ -27,19 +28,27 @@ public class StatClient {
             throw new IllegalArgumentException("URL сервиса статистики не задан");
         }
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(Duration.ofSeconds(10));
+        requestFactory.setConnectionRequestTimeout(Duration.ofSeconds(15));
         restClient = RestClient.builder()
                 .requestFactory(requestFactory)
                 .baseUrl(serverUrl)
                 .build();
     }
 
+
     public void addHit(HitRequestDto hitRequestDto) {
         hitRequestDto.setTimestamp(LocalDateTime.now());
-        restClient.post()
-                .uri(HIT_URI)
-                .body(hitRequestDto)
-                .contentType(MediaType.APPLICATION_JSON)
-                .retrieve();
+        try {
+            restClient.post()
+                    .uri(HIT_URI)
+                    .body(hitRequestDto)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    .toBodilessEntity(); // синхронное выполнение
+        } catch (Exception e) {
+            System.err.println("Ошибка при сохранении статистики: " + e.getMessage());
+        }
     }
 
     public Collection<StatResponseDto> getStat(LocalDateTime start,

@@ -1,3 +1,4 @@
+version: '3.8'
 services:
   stats-service:
     build: stat/stat-service
@@ -15,7 +16,7 @@ services:
     image: postgres:16.1
     container_name: stats-db
     ports:
-      - "6432:5432"
+      - "6432:5432"  # внешний доступ: 6432  внутренний 5432
     environment:
       - POSTGRES_DB=stats-db
       - POSTGRES_USER=dbuser
@@ -33,12 +34,13 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm-db
       - POSTGRES_USER=dbuser
       - POSTGRES_PASSWORD=12345
+      - STAT_CLIENT_SERVER_URL=http://stats-service:9090
 
   ewm-db:
     image: postgres:16.1
     container_name: ewm-db
     ports:
-      - "6433:5432"
+      - "6433:5432"  # внешний доступ: 6433  внутренний 5432
     environment:
       - POSTGRES_DB=ewm-db
       - POSTGRES_USER=dbuser
