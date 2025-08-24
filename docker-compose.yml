@@ -1,8 +1,8 @@
 version: '3.8'
 services:
   stats-service:
-    build: stat/stat-service
-    container_name: stat-service
+    build: stat/stat-server
+    container_name: stat-server
     ports:
       - "9090:9090"
     depends_on:
@@ -29,7 +29,7 @@ services:
       - "8080:8080"
     depends_on:
       - ewm-db
-      - stats-service
+      - stats-server
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm-db
       - POSTGRES_USER=dbuser
