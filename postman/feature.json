@@ -125,6 +125,8 @@
 							"    }",
 							"}",
 							"",
+							"",
+							"const main = async () => {",
 							"const api = new API(pm);",
 							"const randomUtils = new RandomUtils();",
 							"",
@@ -145,7 +147,22 @@
 							"",
 							"// Сохраняем данные для теста",
 							"pm.variables.set('test_user_id', createdUser.id);",
-							"pm.variables.set('test_event_id', publishedEvent.id);"
+							"pm.variables.set('test_event_id', publishedEvent.id);",
+							"};",
+							"const interval = setInterval(() => {}, 1000);",
+							"",
+							"setTimeout(async () => ",
+							"    {",
+							"        try {",
+							"            await main();",
+							"        } catch (e) {",
+							"            console.error(e);",
+							"        } finally {",
+							"            clearInterval(interval);",
+							"        }",
+							"    },  ",
+							"    100 ",
+							");"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -321,6 +338,8 @@
 							"    }",
 							"}",
 							"",
+							"",
+							"const main = async () => {",
 							"const api = new API(pm);",
 							"const randomUtils = new RandomUtils();",
 							"",
@@ -336,12 +355,24 @@
 							"const event = randomUtils.getEvent(createdCategory.id);",
 							"const createdEvent = await api.addEvent(createdUser.id, event);",
 							"",
-							"// Публикуем событие",
-							"const publishedEvent = await api.publishEvent(createdEvent.id);",
-							"",
 							"// Сохраняем данные для теста",
 							"pm.variables.set('test_user_id', createdUser.id);",
-							"pm.variables.set('test_event_id', publishedEvent.id);"
+							"pm.variables.set('test_event_id', createdEvent.id);",
+							"};",
+							"const interval = setInterval(() => {}, 1000);",
+							"",
+							"setTimeout(async () => ",
+							"    {",
+							"        try {",
+							"            await main();",
+							"        } catch (e) {",
+							"            console.error(e);",
+							"        } finally {",
+							"            clearInterval(interval);",
+							"        }",
+							"    },  ",
+							"    100 ",
+							");"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -351,21 +382,10 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test('Status code is 201', function () {",
-							"    pm.response.to.have.status(201);",
+							"pm.test('Status code is 409', function () {",
+							"    pm.response.to.have.status(409);",
 							"});",
-							"",
-							"pm.test('Response has comment data', function () {",
-							"    const response = pm.response.json();",
-							"    pm.expect(response).to.have.property('id');",
-							"    pm.expect(response).to.have.property('text');",
-							"    pm.expect(response).to.have.property('author');",
-							"    pm.expect(response).to.have.property('eventId');",
-							"    pm.expect(response).to.have.property('publishedOn');",
-							"    ",
-							"    // Сохраняем ID комментария для последующих тестов",
-							"    pm.variables.set('test_comment_id', response.id);",
-							"});"
+							""
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -402,6 +422,19 @@
 		{
 			"name": "Добавление комментария с пустым text",
 			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 400', function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
 				{
 					"listen": "prerequest",
 					"script": {
@@ -516,7 +549,7 @@
 							"        return date.toISOString().replace('T', ' ').substring(0, 19);",
 							"    }",
 							"}",
-							"",
+							"const main = async () => {",
 							"const api = new API(pm);",
 							"const randomUtils = new RandomUtils();",
 							"",
@@ -537,31 +570,22 @@
 							"",
 							"// Сохраняем данные для теста",
 							"pm.variables.set('test_user_id', createdUser.id);",
-							"pm.variables.set('test_event_id', publishedEvent.id);"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test('Status code is 201', function () {",
-							"    pm.response.to.have.status(201);",
-							"});",
+							"pm.variables.set('test_event_id', publishedEvent.id);",
+							"};",
+							"const interval = setInterval(() => {}, 1000);",
 							"",
-							"pm.test('Response has comment data', function () {",
-							"    const response = pm.response.json();",
-							"    pm.expect(response).to.have.property('id');",
-							"    pm.expect(response).to.have.property('text');",
-							"    pm.expect(response).to.have.property('author');",
-							"    pm.expect(response).to.have.property('eventId');",
-							"    pm.expect(response).to.have.property('publishedOn');",
-							"    ",
-							"    // Сохраняем ID комментария для последующих тестов",
-							"    pm.variables.set('test_comment_id', response.id);",
-							"});"
+							"setTimeout(async () => ",
+							"    {",
+							"        try {",
+							"            await main();",
+							"        } catch (e) {",
+							"            console.error(e);",
+							"        } finally {",
+							"            clearInterval(interval);",
+							"        }",
+							"    },  ",
+							"    100 ",
+							");"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -578,7 +602,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"text\": \"Отличное событие! Очень понравилось.\"\n}"
+					"raw": "{\n    \"text\": \"\"\n}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/users/{{test_user_id}}/comments/{{test_event_id}}",
@@ -721,6 +745,7 @@
 							"    }",
 							"}",
 							"",
+							"const main = async () => {",
 							"const api = new API(pm);",
 							"const randomUtils = new RandomUtils();",
 							"",
@@ -745,7 +770,22 @@
 							"",
 							"// Сохраняем данные для теста",
 							"pm.variables.set('test_user_id', createdUser.id);",
-							"pm.variables.set('test_event_id', publishedEvent.id);"
+							"pm.variables.set('test_event_id', publishedEvent.id);",
+							"};",
+							"const interval = setInterval(() => {}, 1000);",
+							"",
+							"setTimeout(async () => ",
+							"    {",
+							"        try {",
+							"            await main();",
+							"        } catch (e) {",
+							"            console.error(e);",
+							"        } finally {",
+							"            clearInterval(interval);",
+							"        }",
+							"    },  ",
+							"    100 ",
+							");"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -930,7 +970,7 @@
 							"        return date.toISOString().replace('T', ' ').substring(0, 19);",
 							"    }",
 							"}",
-							"",
+							"const main = async () => {",
 							"const api = new API(pm);",
 							"const randomUtils = new RandomUtils();",
 							"",
@@ -949,13 +989,34 @@
 							"// Публикуем событие",
 							"const publishedEvent = await api.publishEvent(createdEvent.id);",
 							"",
-							"// Создаем комментарий",
-							"const comment = randomUtils.getComment();",
-							"await api.addComment(createdUser.id, publishedEvent.id, comment);",
+							"// Создаем 3 комментария",
+							"const comment1 = randomUtils.getComment();",
+							"await api.addComment(createdUser.id, publishedEvent.id, comment1);",
+							"",
+							"const comment2 = randomUtils.getComment();",
+							"await api.addComment(createdUser.id, publishedEvent.id, comment2);",
+							"",
+							"const comment3 = randomUtils.getComment();",
+							"await api.addComment(createdUser.id, publishedEvent.id, comment3);",
 							"",
 							"// Сохраняем данные для теста",
 							"pm.variables.set('test_user_id', createdUser.id);",
-							"pm.variables.set('test_event_id', publishedEvent.id);"
+							"",
+							"};",
+							"const interval = setInterval(() => {}, 1000);",
+							"",
+							"setTimeout(async () => ",
+							"    {",
+							"        try {",
+							"            await main();",
+							"        } catch (e) {",
+							"            console.error(e);",
+							"        } finally {",
+							"            clearInterval(interval);",
+							"        }",
+							"    },  ",
+							"    100 ",
+							");"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -972,7 +1033,7 @@
 							"pm.test('Response contains comments array', function () {",
 							"    const response = pm.response.json();",
 							"    pm.expect(response).to.be.an('array');",
-							"    pm.expect(response.length).to.be.greaterThan(0);",
+							"    pm.expect(response.length).to.equal(3);",
 							"    ",
 							"    // Проверяем сортировку по дате (от старых к новым)",
 							"    if (response.length > 1) {",
@@ -980,7 +1041,8 @@
 							"        const secondCommentDate = new Date(response[1].publishedOn);",
 							"        pm.expect(firstCommentDate.getTime()).to.be.lte(secondCommentDate.getTime());",
 							"    }",
-							"});"
+							"});",
+							""
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -991,15 +1053,14 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/users/{{test_user_id}}/comments/{{test_event_id}}?from=0&size=10",
+					"raw": "{{baseUrl}}/admin/comments/{{test_user_id}}?from=0&size=10",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
-						"users",
-						"{{test_user_id}}",
+						"admin",
 						"comments",
-						"{{test_event_id}}"
+						"{{test_user_id}}"
 					],
 					"query": [
 						{
@@ -1140,7 +1201,7 @@
 							"        return date.toISOString().replace('T', ' ').substring(0, 19);",
 							"    }",
 							"}",
-							"",
+							"const main = async () => {",
 							"const api = new API(pm);",
 							"const randomUtils = new RandomUtils();",
 							"",
@@ -1165,7 +1226,21 @@
 							"",
 							"// Сохраняем данные для теста",
 							"pm.variables.set('test_user_id', createdUser.id);",
-							"pm.variables.set('test_comment_id', createdComment.id);"
+							"pm.variables.set('test_comment_id', createdComment.id);",
+							"};const interval = setInterval(() => {}, 1000);",
+							"",
+							"setTimeout(async () => ",
+							"    {",
+							"        try {",
+							"            await main();",
+							"        } catch (e) {",
+							"            console.error(e);",
+							"        } finally {",
+							"            clearInterval(interval);",
+							"        }",
+							"    },  ",
+							"    100 ",
+							");"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -1327,7 +1402,7 @@
 							"        return date.toISOString().replace('T', ' ').substring(0, 19);",
 							"    }",
 							"}",
-							"",
+							"const main = async () => {",
 							"const api = new API(pm);",
 							"const randomUtils = new RandomUtils();",
 							"",
@@ -1352,7 +1427,22 @@
 							"",
 							"// Сохраняем данные для теста",
 							"pm.variables.set('test_user_id', createdUser.id);",
-							"pm.variables.set('test_comment_id', createdComment.id);"
+							"pm.variables.set('test_comment_id', createdComment.id);",
+							"};",
+							"const interval = setInterval(() => {}, 1000);",
+							"",
+							"setTimeout(async () => ",
+							"    {",
+							"        try {",
+							"            await main();",
+							"        } catch (e) {",
+							"            console.error(e);",
+							"        } finally {",
+							"            clearInterval(interval);",
+							"        }",
+							"    },  ",
+							"    100 ",
+							");"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -1375,13 +1465,12 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/users/{{test_user_id}}/comments/{{test_comment_id}}",
+					"raw": "{{baseUrl}}/admin/comments/{{test_comment_id}}",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
-						"users",
-						"{{test_user_id}}",
+						"admin",
 						"comments",
 						"{{test_comment_id}}"
 					]
@@ -1514,7 +1603,7 @@
 							"        return date.toISOString().replace('T', ' ').substring(0, 19);",
 							"    }",
 							"}",
-							"",
+							"const main = async () => {",
 							"const api = new API(pm);",
 							"const randomUtils = new RandomUtils();",
 							"",
@@ -1533,13 +1622,32 @@
 							"// Публикуем событие",
 							"const publishedEvent = await api.publishEvent(createdEvent.id);",
 							"",
+							"//создаем пользователя-автора комментария",
+							"const user2 = randomUtils.getUser();",
+							"const userAuthor = await api.addUser(user2);",
+							"",
 							"// Создаем комментарий",
 							"const comment = randomUtils.getComment();",
-							"const createdComment = await api.addComment(createdUser.id, publishedEvent.id, comment);",
+							"const createdComment = await api.addComment(userAuthor.id, publishedEvent.id, comment);",
 							"",
 							"// Сохраняем данные для теста",
-							"pm.variables.set('test_user_id', createdUser.id);",
-							"pm.variables.set('test_comment_id', createdComment.id);"
+							"pm.variables.set('test_user_id', userAuthor.id);",
+							"pm.variables.set('test_comment_id', createdComment.id);",
+							"};",
+							"const interval = setInterval(() => {}, 1000);",
+							"",
+							"setTimeout(async () => ",
+							"    {",
+							"        try {",
+							"            await main();",
+							"        } catch (e) {",
+							"            console.error(e);",
+							"        } finally {",
+							"            clearInterval(interval);",
+							"        }",
+							"    },  ",
+							"    100 ",
+							");"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -1701,13 +1809,16 @@
 							"        return date.toISOString().replace('T', ' ').substring(0, 19);",
 							"    }",
 							"}",
-							"",
+							"const main = async () => {",
 							"const api = new API(pm);",
 							"const randomUtils = new RandomUtils();",
 							"",
 							"// Создаем пользователя",
 							"const user = randomUtils.getUser();",
 							"const createdUser = await api.addUser(user);",
+							"",
+							"const user2 = randomUtils.getUser();",
+							"const anotherUser = await api.addUser(user2);",
 							"",
 							"// Создаем категорию",
 							"const category = randomUtils.getCategory();",
@@ -1725,8 +1836,23 @@
 							"const createdComment = await api.addComment(createdUser.id, publishedEvent.id, comment);",
 							"",
 							"// Сохраняем данные для теста",
-							"pm.variables.set('test_user_id', createdUser.id);",
-							"pm.variables.set('test_comment_id', createdComment.id);"
+							"pm.variables.set('test_user_id', anotherUser.id);",
+							"pm.variables.set('test_comment_id', createdComment.id);",
+							"};",
+							"const interval = setInterval(() => {}, 1000);",
+							"",
+							"setTimeout(async () => ",
+							"    {",
+							"        try {",
+							"            await main();",
+							"        } catch (e) {",
+							"            console.error(e);",
+							"        } finally {",
+							"            clearInterval(interval);",
+							"        }",
+							"    },  ",
+							"    100 ",
+							");"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -1736,8 +1862,8 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test('Status code is 204', function () {",
-							"    pm.response.to.have.status(204);",
+							"pm.test('Status code is 409', function () {",
+							"    pm.response.to.have.status(409);",
 							"});"
 						],
 						"type": "text/javascript",
