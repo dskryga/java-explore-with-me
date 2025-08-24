@@ -10,5 +10,6 @@ import java.util.List;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findByEventIdOrderByPublishedOnAsc(Long eventId, Pageable pageable);
+
     List<Comment> findByAuthorId(Long authorId, Pageable pageable);
 }
