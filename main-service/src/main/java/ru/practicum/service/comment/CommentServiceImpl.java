@@ -1,6 +1,5 @@
 package ru.practicum.service.comment;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -55,7 +54,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<CommentDto> getComments(Integer from, Integer size, Long eventId) {
-        Pageable pageable = PageRequest.of(from/size,size);
+        Pageable pageable = PageRequest.of(from / size, size);
         getEventOrThrow(eventId);
         return commentRepository.findByEventIdOrderByPublishedOnAsc(eventId, pageable).stream()
                 .map(CommentMapper::mapToDto)
@@ -70,8 +69,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<CommentDto> getAllCommentByUser(Long userId, Integer from, Integer size) {
-        Pageable pageable = PageRequest.of(from/size, size);
-        return commentRepository.findByAuthorId(userId,pageable).stream()
+        Pageable pageable = PageRequest.of(from / size, size);
+        return commentRepository.findByAuthorId(userId, pageable).stream()
                 .map(CommentMapper::mapToDto)
                 .collect(Collectors.toList());
     }
